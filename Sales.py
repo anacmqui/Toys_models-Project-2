@@ -52,7 +52,7 @@ ax.set_title('Product Lines')
 #Second Part
 ##Growth by category considering all dates##
 
-fig, ax = plt.subplots(figsize = (15, 5))
+fig1, ax = plt.subplots(figsize = (15, 5))
 dfS = dfSales.groupby('productline').mean()
 ax.bar(dfS.index, dfS['growth'])
 #ax.bar(dfSales.groupby('productline').mean()[['growth']],height='growth')
@@ -60,12 +60,13 @@ ax.bar(dfS.index, dfS['growth'])
 ax.set_ylabel('Overall Growth in Orders')
 ax.set_xlabel('Product Lines')
 ax.set_title('Growth by category (all_dates)')
+st.pyplot(fig1)
 
 #Put % in y axis
 fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
 xticks = mtick.FormatStrFormatter(fmt)
 ax.yaxis.set_major_formatter(xticks)
-
+# st.pyplot(fig)
 #plt.show()
 
 #Third Part
@@ -120,7 +121,16 @@ sns.set(rc={'figure.figsize':(12,5)})
 #Only for classic cars , total orders each year
 dfSales[dfSales['productline']=='Classic Cars']
 dfCC = dfSales[dfSales['productline']=='Classic Cars']
-sns.set(rc={'figure.figsize':(12,5)})
+
+fig2, ax = plt.subplots(figsize = (15, 5))
 sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
+ax.set_ylabel('Orders')
+ax.set_xlabel('Month')
+ax.set_title('Monthly order growth for Classic Cars')
 plt.legend(loc='upper right', title='Year')
-plt.show()
+st.pyplot(fig2)
+
+#sns.set(rc={'figure.figsize':(12,5)})
+#sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
+# plt.legend(loc='upper right', title='Year')
+# st.pyplot()
