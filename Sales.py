@@ -91,6 +91,7 @@ st.table(dfSales.groupby('productline').total_orders.sum())
 #Fourth Part
 data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
 data2021 = dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum()
+data2022 = dfSales[dfSales['order_year']==2022].groupby('productline').total_orders.sum()
 dataAll = dfSales.groupby('productline').total_orders.sum()
 labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
        'Trucks and Buses', 'Vintage Cars']
@@ -102,19 +103,38 @@ colors1 = sns.color_palette('Paired')[0:7]
 #Create pie chart for each year
 #Year 2020
 print('Plot 2020')
-plt2020 = plt.pie(data2020, labels = labels, colors = colors1, autopct='%.0f%%')
+fig02,  ax = plt.subplots(figsize =(10, 5))
+plt.pie(data2020, labels = labels, colors = colors1, autopct='%.0f%%')
 #plt.show()
+st.text(" ")
+st.text("Plot 2020")
+st.pyplot(fig02)
 print('')
 
 #Year 2021
 print('Plot 2021')
-plt2020 = plt.pie(data2021, labels = labels, colors = colors1, autopct='%.0f%%')
+fig03, ax = plt.subplots(figsize = (10,5))
+plt.pie(data2021, labels = labels, colors = colors1, autopct='%.0f%%')
 #plt.show()
+st.text(" ")
+st.text("Plot 2021")
+st.pyplot(fig03)
 print('')
 
+#Year 2022
+fig04, ax = plt.subplots(figsize =(5,5))
+plt.pie(data2022, labels= labels, colors= colors1, autopct='%.0f%%' )
+st.text(" ")
+st.text("Plot 2022")
+st.pyplot(fig04)
+
 #All years
-print('All data')
-#pltAll = plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%')
+fig05, ax = plt.subplots(figsize = (5,5))
+plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%')
+st.text(" ")
+st.text("Plot All")
+st.pyplot(fig05)
+
 
 #Fifth Part
 #Just with seaborn
@@ -128,13 +148,13 @@ sns.set(rc={'figure.figsize':(12,5)})
 dfSales[dfSales['productline']=='Classic Cars']
 dfCC = dfSales[dfSales['productline']=='Classic Cars']
 
-fig02, ax = plt.subplots(figsize = (15, 5))
+fig06, ax = plt.subplots(figsize = (15, 5))
 sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
 ax.set_ylabel('Orders')
 ax.set_xlabel('Month')
 ax.set_title('Monthly order growth for Classic Cars')
 plt.legend(loc='upper right', title='Year')
-st.pyplot(fig02)
+st.pyplot(fig06)
 
 #sns.set(rc={'figure.figsize':(12,5)})
 #sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
