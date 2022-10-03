@@ -21,10 +21,11 @@ dffin
 
 #st.table(dffin)
 
-#dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?')
-#plt.xlabel('Country')
-#plt.ylabel('Ordered amount')
-#st.pyplot(fig_viz)
+fig_viz = dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?')
+plt.xlabel('Country')
+plt.ylabel('Ordered amount')
+
+st.pyplot(fig_viz)
 
 fig, x = plt.subplots()
 
