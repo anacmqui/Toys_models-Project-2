@@ -44,16 +44,16 @@ connection3 = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!'
 dfSales = pd.read_sql(query_sales, con=connection3)
 #dfSales = pd.read_sql_query(query_sales, sql_engine)
 dfSales
-fig, ax = plt.subplots(figsize = (15, 5))
-ax.bar(dfSales['productline'], dfSales['growth'])
-ax.set_ylabel('Overall Growth in Orders')
-ax.set_title('Product Lines')
-#plt.show()
+# fig01, ax = plt.subplots(figsize = (15, 5))
+# ax.bar(dfSales['productline'], dfSales['growth'])
+# ax.set_ylabel('Overall Growth in Orders')
+# ax.set_title('Product Lines')
+# st.pyplot(fig01)
 
 #Second Part
 ##Growth by category considering all dates##
 
-fig1, ax = plt.subplots(figsize = (15, 5))
+fig01, ax = plt.subplots(figsize = (15, 5))
 dfS = dfSales.groupby('productline').mean()
 ax.bar(dfS.index, dfS['growth'])
 #ax.bar(dfSales.groupby('productline').mean()[['growth']],height='growth')
@@ -61,14 +61,11 @@ ax.bar(dfS.index, dfS['growth'])
 ax.set_ylabel('Overall Growth in Orders')
 ax.set_xlabel('Product Lines')
 ax.set_title('Growth by category (all_dates)')
-st.pyplot(fig1)
-
 #Put % in y axis
 fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
 xticks = mtick.FormatStrFormatter(fmt)
 ax.yaxis.set_major_formatter(xticks)
-# st.pyplot(fig)
-#plt.show()
+st.pyplot(fig01)
 
 #Third Part
 #dfSales.groupby('productline').total_orders.sum()
@@ -80,8 +77,16 @@ st.table(dfSales[dfSales['order_year']==2020].groupby('productline').total_order
 print('Total orders in 2021')
 print(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
 print('')
+st.text(" ")
+st.text("Total orders 2021")
+st.table(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
+
 print('Total orders all years')
 print(dfSales.groupby('productline').total_orders.sum())
+st.text(" ")
+st.text("Total orders all years")
+st.table(dfSales.groupby('productline').total_orders.sum())
+
 
 #Fourth Part
 data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
