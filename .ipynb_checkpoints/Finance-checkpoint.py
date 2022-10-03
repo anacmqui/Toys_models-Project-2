@@ -3,11 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mysql.connector
 import streamlit as st
+import seaborn as sns
 
 import sqlalchemy as sql
 from datetime import datetime
 
 connection2 = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!', host = '51.68.18.102', port = '23456', database = 'toys_and_models')
+
+#Query 1 - Define turnover of countries of last 2 months
 query_fin = '''select customers.country, month(orders.orderDate) as 'Month', sum(orderdetails.quantityOrdered*orderdetails.priceEach) as Turnover
 from orders
 join orderdetails
@@ -17,25 +20,19 @@ on orders.customerNumber = customers.customerNumber
 where status <>'Cancelled' and orders.orderDate>=date_sub(curdate(), interval 2 month)
 group by country, monthname(orders.orderDate) desc;'''
 dffin = pd.read_sql_query(query_fin, con=connection2)
-dffin
+#dffin
 
-#st.table(dffin)
+# Query 1 plot
+fig1, ax = plt.subplots(figsize = (5, 5))
+sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", ci=None)
+ax.set_ylabel('Turnover')
+ax.set_xlabel('Country')
+ax.set_title('Where are orders going recently?')
+plt.legend(loc='upper left', title='Month')
+st.pyplot(fig1)
 
-fig_viz = dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?')
-plt.xlabel('Country')
-plt.ylabel('Ordered amount')
 
-st.pyplot(fig_viz)
-
-fig, x = plt.subplots()
-
-x.bar(dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?'),
-plt.xlabel('Country'),
-plt.ylabel('Ordered amount')
-)
-
-st.pyplot(fig)
-
+#Query 2 - Customers who have not yet paid for the orders
 query_fin2 = '''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered from orderdetails
 join orders
 on orders.orderNumber = orderdetails.orderNumber
@@ -51,18 +48,21 @@ having to_be_paid <> 0
 order by to_be_paid desc
 ;'''
 dffin2 = pd.read_sql_query(query_fin2, con=connection2)
-dffin2
-
 dffin2['customerNumber'] = dffin2['customerNumber'].astype(str)
 
-st.table(dffin2)
+#st.table(dffin2)
 
-plt.title('Which clients do we have to chase?')
-plt.bar(dffin2["customerNumber"],dffin2["to_be_paid"])
-plt.xlabel('Customer Number')
-plt.ylabel('Amount owed')
-#st.plt()
+# Query 2 plot
+fig2, ax = plt.subplots(figsize = (5, 5)) 
+sns.barplot(data=dffin2, x='customerNumber', y="to_be_paid")
+ax.set_ylabel('Amount to be paid')
+ax.set_xlabel('Customer Number')
+ax.set_title('Which clients do we have to chase?')
+plt.legend(loc='upper left')
+st.pyplot(fig2)
 
+
+#Contact information of the clients overdue
 query_fin3='''select customers.customerNumber as Customer_Number, customerName as Customer_Name, country as Country, concat(contactFirstName, ' ', contactLastName) as Contact_person, phone, count(orderNumber) as Total_orders from customers
 join orders
 on orders.customerNumber=customers.customerNumber
@@ -72,7 +72,7 @@ or customers.customerNumber = 496 or customers.customerNumber = 333 or customers
 group by customers.customerNumber
 ;'''
 
+#Table with contact info
 dffin3 = pd.read_sql_query(query_fin3, con=connection2)
-dffin3
-
+dffin3.set_index('Customer_Number', drop = True)
 st.table(dffin3)
