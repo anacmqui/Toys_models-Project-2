@@ -1,5 +1,4 @@
 #First Part
-# YY
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -137,26 +136,29 @@ st.pyplot(fig05)
 
 
 #Fifth Part
-#Just with seaborn
-#CC = dfSales[dfSales["productline"] == "Classic Cars"]
-#orders_CC = dfSales[dfSales["productline"] == "Classic Cars"].total_orders.sum()
-#sns.barplot(data=dfSales, x=CC, y=orders_CC, hue="order_month")
-sns.set(rc={'figure.figsize':(12,5)})
+# #Just with seaborn
+# CC = dfSales[dfSales["productline"] == "Classic Cars"]
+# orders_CC = dfSales[dfSales["productline"] == "Classic Cars"].total_orders.sum()
+# fig06, ax = plt.subplots()
+# sns.barplot(data=dfSales, x=CC, y=orders_CC, hue="order_month", ci=None)
+# # sns.set(rc={'figure.figsize':(12,5)})
+# st.pyplot(fig06)
 
 #Final Part
 #Only for classic cars , total orders each year
 dfSales[dfSales['productline']=='Classic Cars']
 dfCC = dfSales[dfSales['productline']=='Classic Cars']
 
-fig06, ax = plt.subplots(figsize = (15, 5))
+fig07, ax = plt.subplots(figsize = (15, 5))
 sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
 ax.set_ylabel('Orders')
 ax.set_xlabel('Month')
 ax.set_title('Monthly order growth for Classic Cars')
 plt.legend(loc='upper right', title='Year')
-st.pyplot(fig06)
+st.pyplot(fig07)
 
-#sns.set(rc={'figure.figsize':(12,5)})
-#sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
-# plt.legend(loc='upper right', title='Year')
-# st.pyplot()
+fig08, ax = plt.subplots(figsize =(15,5))
+sns.set(rc={'figure.figsize':(12,5)})
+sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
+plt.legend(loc='upper right', title='Year')
+st.pyplot(fig08)
