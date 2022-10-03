@@ -19,13 +19,22 @@ group by country, monthname(orders.orderDate) desc;'''
 dffin = pd.read_sql_query(query_fin, con=connection2)
 dffin
 
-st.table(dffin)
+#st.table(dffin)
 
-dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?')
+fig_viz = dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?')
 plt.xlabel('Country')
 plt.ylabel('Ordered amount')
-plt.show()
-#st.plt()
+
+st.pyplot(fig_viz)
+
+fig, x = plt.subplots()
+
+x.bar(dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='bar', title ='Where are orders going to recently?'),
+plt.xlabel('Country'),
+plt.ylabel('Ordered amount')
+)
+
+st.pyplot(fig)
 
 query_fin2 = '''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered from orderdetails
 join orders
