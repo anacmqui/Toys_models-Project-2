@@ -25,7 +25,7 @@ dffin.pivot(index='country', columns ='Month', values ='Turnover').plot(kind='ba
 plt.xlabel('Country')
 plt.ylabel('Ordered amount')
 plt.show()
-#st.plt()
+#st.pyplot()
 
 query_fin2 = '''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered from orderdetails
 join orders

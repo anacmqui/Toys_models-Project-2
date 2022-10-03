@@ -123,3 +123,4 @@ dfCC = dfSales[dfSales['productline']=='Classic Cars']
 sns.set(rc={'figure.figsize':(12,5)})
 sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
 plt.legend(loc='upper right', title='Year')
+plt.show()
