@@ -128,13 +128,13 @@ sns.set(rc={'figure.figsize':(12,5)})
 dfSales[dfSales['productline']=='Classic Cars']
 dfCC = dfSales[dfSales['productline']=='Classic Cars']
 
-fig2, ax = plt.subplots(figsize = (15, 5))
+fig02, ax = plt.subplots(figsize = (15, 5))
 sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
 ax.set_ylabel('Orders')
 ax.set_xlabel('Month')
 ax.set_title('Monthly order growth for Classic Cars')
 plt.legend(loc='upper right', title='Year')
-st.pyplot(fig2)
+st.pyplot(fig02)
 
 #sns.set(rc={'figure.figsize':(12,5)})
 #sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
