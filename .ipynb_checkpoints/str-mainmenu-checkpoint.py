@@ -89,8 +89,7 @@ order by sum(orderdetails.quantityOrdered) desc limit 0,5'''
 
 #Query 1 - Show the best sellers since the last 3 months
 
-query1_hr = '''
-with top_sellers as (select employeeNumber, lastName, firstName, jobTitle, sum(priceEach*quantityOrdered) as final_amount,
+query1_hr = '''with top_sellers as (select employeeNumber, lastName, firstName, jobTitle, sum(priceEach*quantityOrdered) as final_amount,
  DATE_FORMAT(orders.orderdate, "%m %Y") as date_true, rank() over (partition by date_true order by final_amount desc) price_rank from employees
 join customers
 on employees.employeeNumber=customers.salesRepEmployeeNumber
@@ -101,15 +100,13 @@ on orders.orderNumber=orderdetails.orderNumber
 where jobTitle like 'Sales Rep%' and orders.status <> 'Cancelled'
 group by date_true, employees.employeeNumber
 order by date_true, final_amount desc)
-select concat(firstName, ' ', lastName) as Name, employeeNumber, final_amount, date_true, price_rank
+select concat(firstName, ' ', lastName) as Sellers, employeeNumber, final_amount, date_true, price_rank
 from top_sellers
-where date_true = ("06 2022") or date_true = ("07 2022") or date_true = ("08 2022")
 having price_rank=1 or price_rank=2;'''
 
 # Query 2 HR 
 
-query2_hr = ''' 
-with top_sellers as (select employeeNumber, lastName, firstName, jobTitle, sum(priceEach*quantityOrdered) as final_amount,
+query2_hr = '''with top_sellers as (select employeeNumber, lastName, firstName, jobTitle, sum(priceEach*quantityOrdered) as final_amount,
  DATE_FORMAT(orders.orderdate, "%m %Y") as date_true, rank() over (partition by date_true order by final_amount desc) as Ranking from employees
 join customers
 on employees.employeeNumber=customers.salesRepEmployeeNumber
@@ -121,7 +118,7 @@ where jobTitle like 'Sales Rep%' and orders.status <> 'Cancelled'
 group by date_true, employees.employeeNumber
 order by date_true, final_amount desc)
 select concat(firstName, ' ', lastName) as Sellers, count(Ranking) as Ranking from top_sellers
-where ranking=1 
+where ranking=1
 group by lastname
 order by count(ranking) desc;'''
 
@@ -259,7 +256,8 @@ elif add_selectbox == 'Sales':
     
     #dfSales[dfSales['productline']=='Classic Cars']
     
-    options = st.selectbox('Choose the type of product:', ['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
+    options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
+    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
     
     
     #dfCC = dfSales[dfSales['productline']==options]
@@ -295,13 +293,35 @@ else:
     
     
 # Query 1 plot
-    fig_1, ax = plt.subplots(figsize = (5, 5))
-    sns.barplot(data=dffin_1, x='date_true', y='final_amount', hue="Name", ci=None)
-    ax.set_ylabel('Amount')
-    ax.set_xlabel('Date')
-    ax.set_title('The best sellers over the last 3 months')
-    plt.legend(loc='upper left', title='Sellers')
-    st.pyplot(fig_1)
+    
+    options = st.selectbox('Choose the month:', dffin_1['date_true'].unique())
+    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
+    
+    df_HR=dffin_1[dffin_1['date_true']==options][['Sellers','final_amount']]
+    
+    hide_table_row_index = """
+            <style>
+            thead tr th:first-child {display:none}
+            tbody th {display:none}
+            </style>
+            """
+    st.markdown(hide_table_row_index, unsafe_allow_html=True)
+    st.table(df_HR)
+    
+    #fig_1, ax = plt.subplots(figsize = (5, 5))
+    #sns.barplot(data=dffin_1[dffin_1['date_true']==options], x='date_true', y='final_amount', hue="Sellers", ci=None)
+    #ax.set_ylabel('Amount')
+    #ax.set_xlabel('Date')
+    #ax.set_title('The best sellers over the last 3 months')
+    #plt.legend(loc='upper left', title='Sellers')
+    #st.pyplot(fig_1)
     
 # Query 2 plot
-    st.dataframe(dffin_2)
+    hide_table_row_index = """
+            <style>
+            thead tr th:first-child {display:none}
+            tbody th {display:none}
+            </style>
+            """
+    st.markdown(hide_table_row_index, unsafe_allow_html=True)
+    st.table(dffin_2)

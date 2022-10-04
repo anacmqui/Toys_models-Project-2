@@ -23,9 +23,8 @@ on orders.orderNumber=orderdetails.orderNumber
 where jobTitle like 'Sales Rep%' and orders.status <> 'Cancelled'
 group by date_true, employees.employeeNumber
 order by date_true, final_amount desc)
-select concat(firstName, ' ', lastName) as Name, employeeNumber, final_amount, date_true, price_rank
+select concat(firstName, ' ', lastName) as Sellers, employeeNumber, final_amount, date_true, price_rank
 from top_sellers
-where date_true = ("06 2022") or date_true = ("07 2022") or date_true = ("08 2022")
 having price_rank=1 or price_rank=2;'''
 dffin_1 = pd.read_sql_query(query1_hr, con=connection2)
 
