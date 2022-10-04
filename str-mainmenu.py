@@ -110,7 +110,7 @@ having price_rank=1 or price_rank=2;'''
 
 query2_hr = ''' 
 with top_sellers as (select employeeNumber, lastName, firstName, jobTitle, sum(priceEach*quantityOrdered) as final_amount,
- DATE_FORMAT(orders.orderdate, "%m %Y") as date_true, rank() over (partition by date_true order by final_amount desc) price_rank from employees
+ DATE_FORMAT(orders.orderdate, "%m %Y") as date_true, rank() over (partition by date_true order by final_amount desc) as Ranking from employees
 join customers
 on employees.employeeNumber=customers.salesRepEmployeeNumber
 join orders
@@ -120,10 +120,10 @@ on orders.orderNumber=orderdetails.orderNumber
 where jobTitle like 'Sales Rep%' and orders.status <> 'Cancelled'
 group by date_true, employees.employeeNumber
 order by date_true, final_amount desc)
-select concat(firstName, ' ', lastName) as Name, count(price_rank) as Ranking from top_sellers
-where Ranking=1 
+select concat(firstName, ' ', lastName) as Sellers, count(Ranking) as Ranking from top_sellers
+where ranking=1 
 group by lastname
-order by Ranking desc;'''
+order by count(ranking) desc;'''
 
 connection2 = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!', host = '51.68.18.102', port = '23456', database = 'toys_and_models')    
 #connection3 = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!', host = '51.68.18.102', port = '23456', database = 'toys_and_models')
@@ -304,5 +304,4 @@ else:
     st.pyplot(fig_1)
     
 # Query 2 plot
-
     st.dataframe(dffin_2)
