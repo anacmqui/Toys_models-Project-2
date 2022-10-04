@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import numpy as np
-import sqlalchemy as sql
+#import sqlalchemy as sql
 import datetime
 import mysql.connector
 
