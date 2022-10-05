@@ -287,6 +287,14 @@ elif add_selectbox == 'Logistics':
 
     st.title('Logistics')
     st.table(dfLog)
+
+    fig08, ax = plt.subplots()
+    ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = "green")
+    ax.invert_yaxis()
+    ax.set_xlabel('Available Stock')
+    ax.set_title('Stock of the 5 most ordered products')
+    #plt.yticks(fontsize=7)
+    st.pyplot(fig08)
     
 else:
     st.markdown('''Hi, _this_ is **HR**''')
