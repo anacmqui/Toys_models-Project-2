@@ -179,7 +179,7 @@ elif add_selectbox == 'Finance':
     
     
     st.title('Finance 💰')
-    st.subheader('*Where are our models going to?*')
+    st.subheader('*Where are the orders going to?*')
     fig1, ax = plt.subplots(figsize = (10, 5))
     sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", palette =color, ci=None)
     ax.set_ylabel('Turnover')
@@ -197,7 +197,7 @@ elif add_selectbox == 'Finance':
     #plt.legend(loc='upper left')
     #st.pyplot(fig2)
     
-    st.subheader('*Which clients do we have to chase?*')
+    st.subheader('*Which clients do you have to chase?*')
     hide_table_row_index = """
             <style>
             thead tr th:first-child {display:none}
@@ -211,7 +211,7 @@ elif add_selectbox == 'Finance':
 
 elif add_selectbox == 'Sales':
     st.title('Sales 📦')
-    st.subheader('*Which is our most important category?*')
+    st.subheader('*Which is the most important category?*')
     
     data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
     dataAll = dfSales.groupby('productline').total_orders.sum()
@@ -294,16 +294,8 @@ else:
             """
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(df_HR)
-    
-    #fig_1, ax = plt.subplots(figsize = (5, 5))
-    #sns.barplot(data=dffin_1[dffin_1['date_true']==options], x='date_true', y='final_amount', hue="Sellers", ci=None)
-    #ax.set_ylabel('Amount')
-    #ax.set_xlabel('Date')
-    #ax.set_title('The best sellers over the last 3 months')
-    #plt.legend(loc='upper left', title='Sellers')
-    #st.pyplot(fig_1)
-    
-# Query 2 plot
+ 
+
     hide_table_row_index = """
             <style>
             thead tr th:first-child {display:none}
@@ -312,3 +304,5 @@ else:
             """
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dffin_2)
+    
+    
