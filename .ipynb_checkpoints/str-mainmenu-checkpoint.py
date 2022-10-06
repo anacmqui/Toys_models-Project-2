@@ -154,7 +154,8 @@ dffin_2 = pd.read_sql_query(query2_hr, con=connection2)
 
 
 primaryColor = '#77FFE3'
-     
+color = ['lightgreen','mediumseagreen','seagreen']
+
 #color1 = sns.color_palette("light:#5A9", as_cmap=True)
 #colors1 = sns.color_palette('Paired')[0:7]
 
@@ -180,7 +181,7 @@ elif add_selectbox == 'Finance':
     st.title('Finance 💰')
     st.subheader('*Where are our models going to?*')
     fig1, ax = plt.subplots(figsize = (10, 5))
-    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", color='mediumseagreen', ci=None)
+    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", palette =color, ci=None)
     ax.set_ylabel('Turnover')
     ax.set_xlabel('Country')
     ax.set_title('Turnover per country over the past 2 months')
@@ -245,7 +246,7 @@ elif add_selectbox == 'Sales':
 
     
     #dfSales[dfSales['productline']=='Classic Cars']
-    st.subheader('*Which categories are growing on a YoY basis?*')
+    st.subheader('*How are categories growing on a YoY basis?*')
     options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
     
     #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
@@ -254,7 +255,7 @@ elif add_selectbox == 'Sales':
 
     fig07, ax = plt.subplots(figsize = (10, 5))
     colors = sns.color_palette('Greens')[5]
-    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", color = 'mediumseagreen', ci=None)
+    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", palette =color, ci=None)
     ax.set_ylabel('Orders')
     ax.set_xlabel('Month')
     ax.set_title('Monthly order growth by category')
@@ -265,7 +266,7 @@ elif add_selectbox == 'Sales':
 
 elif add_selectbox == 'Logistics':
     st.title('Logistics 🏭')
-    st.subheader('*Which is the stock level of the 5 most ordered products??*')
+    st.subheader('*Which is the stock level of the 5 most ordered products?*')
 
     fig08, ax = plt.subplots()
     ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = 'mediumseagreen')
