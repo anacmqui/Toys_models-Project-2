@@ -9,6 +9,7 @@ import datetime
 import mysql.connector
 from PIL import Image 
 
+
 #[theme]
 #primaryColor="#F63366"
 #backgroundColor="#FFFFFF"
@@ -130,7 +131,7 @@ on orders.orderNumber=orderdetails.orderNumber
 where jobTitle like 'Sales Rep%' and orders.status <> 'Cancelled'
 group by date_true, employees.employeeNumber
 order by date_true, final_amount desc)
-select concat(firstName, ' ', lastName) as Sellers, count(Ranking) as Ranking from top_sellers
+select concat(firstName, ' ', lastName) as Sellers, count(Ranking) as Recurring_best_sellers from top_sellers
 where ranking=1
 group by lastname
 order by count(ranking) desc;'''
@@ -306,6 +307,7 @@ else:
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dffin_2)
     
-    image1 = Image.open(r'Documents/GitHub/Toys_models-Project-2/bonheur-au-travail.jpg')
+  
+    image1 = Image.open('Documents/GitHub/Toys_models-Project-2/bonheur-au-travail.jpg')
     st.image(image1)
    

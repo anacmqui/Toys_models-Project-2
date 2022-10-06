@@ -8,7 +8,7 @@ import numpy as np
 #import sqlalchemy as sql
 import datetime
 import mysql.connector
-from PIL import Image 
+from PIL import Image
 
 
 
@@ -309,3 +309,5 @@ else:
             """
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dffin_2)
+
+    
