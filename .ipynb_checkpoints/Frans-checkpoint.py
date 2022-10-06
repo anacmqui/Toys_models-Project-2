@@ -7,14 +7,8 @@ import numpy as np
 #import sqlalchemy as sql
 import datetime
 import mysql.connector
-from PIL import Image 
 
-#[theme]
-#primaryColor="#F63366"
-#backgroundColor="#FFFFFF"
-#secondaryBackgroundColor="#F0F2F6"
-#textColor="#262730"
-#font="sans serif"
+
 
 
 
@@ -30,23 +24,7 @@ group by country, monthname(orders.orderDate) desc;'''
 
 #dffin
 
-#query_fin2 = '''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered from orderdetails
-#join orders
-#on orders.orderNumber = orderdetails.orderNumber
-#group by orders.customerNumber -- did not include status <> 'Cancelled' because the difference is negative for some, might mean that order was partially cancelled and part of it was paid
-#order by orders.customerNumber),
-#amount_paid as (select payments.customerNumber, sum(payments.amount) as final_paid from payments
-#group by payments.customerNumber
-#order by customerNumber)
-#select amount_ordered.customerNumber, final_ordered, final_paid, final_ordered-final_paid as to_be_paid from amount_paid
-#join amount_ordered
-#on amount_ordered.customerNumber = amount_paid.customerNumber
-#having to_be_paid <> 0
-#order by to_be_paid desc;'''
-
-
-#Contact information of the clients overdue
-query_fin3='''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered, count(orders.orderNumber) as Nb_orders from orderdetails
+query_fin2 = '''with amount_ordered as (select orders.customerNumber, sum(orderdetails.priceEach*orderdetails.quantityOrdered) as final_ordered from orderdetails
 join orders
 on orders.orderNumber = orderdetails.orderNumber
 group by orders.customerNumber -- did not include status <> 'Cancelled' because the difference is negative for some, might mean that order was partially cancelled and part of it was paid
@@ -54,13 +32,22 @@ order by orders.customerNumber),
 amount_paid as (select payments.customerNumber, sum(payments.amount) as final_paid from payments
 group by payments.customerNumber
 order by customerNumber)
-select amount_ordered.customerNumber as Customer_Number, customers.customerName as Customer_Name, customers.country as Country, final_ordered-final_paid as Outstanding_payment from amount_paid
+select amount_ordered.customerNumber, final_ordered, final_paid, final_ordered-final_paid as to_be_paid from amount_paid
 join amount_ordered
 on amount_ordered.customerNumber = amount_paid.customerNumber
-join customers
-on customers.customerNumber=amount_paid.customerNumber
-having Outstanding_payment <> 0
-order by Outstanding_payment desc
+having to_be_paid <> 0
+order by to_be_paid desc
+;'''
+
+
+#Contact information of the clients overdue
+query_fin3='''select customers.customerNumber as Customer_Number, customerName as Customer_Name, country as Country, concat(contactFirstName, ' ', contactLastName) as Contact_person, phone, count(orderNumber) as Total_orders from customers
+join orders
+on orders.customerNumber=customers.customerNumber
+where customers.customerNumber = 141 or customers.customerNumber = 124 or customers.customerNumber = 448 or customers.customerNumber = 131 
+or customers.customerNumber = 321 or customers.customerNumber = 186 or customers.customerNumber = 144 
+or customers.customerNumber = 496 or customers.customerNumber = 333 or customers.customerNumber = 201 or customers.customerNumber = 219 or customers.customerNumber = 357
+group by customers.customerNumber
 ;'''
 
 #Table with contact info
@@ -142,10 +129,10 @@ connection2 = mysql.connector.connect(user = 'toyscie', password = 'WILD4Rdata!'
 
  
 dffin = pd.read_sql_query(query_fin, con=connection2)    
-#dffin2 = pd.read_sql_query(query_fin2, con=connection2)
-#dffin2['customerNumber'] = dffin2['customerNumber'].astype(str)        
+dffin2 = pd.read_sql_query(query_fin2, con=connection2)
+dffin2['customerNumber'] = dffin2['customerNumber'].astype(str)        
 dffin3 = pd.read_sql_query(query_fin3, con=connection2)
-#dffin3.set_index('Customer_Number', drop = True)    
+dffin3.set_index('Customer_Number', drop = True)    
 dfSales = pd.read_sql(query_sales, con=connection2)
 dfLog = pd.read_sql_query(query_logistics, con=connection2)    
 dffin_1 = pd.read_sql_query(query1_hr, con=connection2)
@@ -154,86 +141,48 @@ dffin_2 = pd.read_sql_query(query2_hr, con=connection2)
 
 
 primaryColor = '#77FFE3'
-     
-#color1 = sns.color_palette("light:#5A9", as_cmap=True)
-#colors1 = sns.color_palette('Paired')[0:7]
+    
+st.title('Project 2!')
+
 
 # Using object notation
 add_selectbox = st.sidebar.selectbox(
     "Select company's department",
-    ['Intro', "Sales", "Finance","Logistics", "HR"],
+    ["Sales", "Finance","Logistics", "HR"],
     )    
     
 
 # Query 1 plot
-if add_selectbox == 'Intro':
-    st.title('Model company')
+if add_selectbox == 'Finance':
     
-    image = Image.open('/Users/anacarolinaquintino/Downloads/Model.jpg')
-    st.image(image)
-    
-    st.subheader('What does data tell us?')
-    
-elif add_selectbox == 'Finance':
-    
-    
-    st.title('Finance 💰')
-    st.subheader('*Where are our models going to?*')
     fig1, ax = plt.subplots(figsize = (10, 5))
-    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", color='mediumseagreen', ci=None)
+    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", ci=None)
     ax.set_ylabel('Turnover')
     ax.set_xlabel('Country')
-    ax.set_title('Turnover per country over the past 2 months')
-    ax.get_yaxis().set_major_formatter(mtick.FuncFormatter(lambda x, p: format(int(x), ',')))
+    ax.set_title('Where are orders going recently?')
     plt.legend(loc='upper left', title='Month')
     st.pyplot(fig1)
     
-    #fig2, ax = plt.subplots(figsize = (5, 5)) 
-    #sns.barplot(data=dffin2, x='customerNumber', y="to_be_paid", color='b')
-    #ax.set_ylabel('Amount to be paid')
-    #ax.set_xlabel('Customer Number')
-    #ax.set_title('Which clients do we have to chase?')
-    #plt.legend(loc='upper left')
-    #st.pyplot(fig2)
+    fig2, ax = plt.subplots(figsize = (5, 5)) 
+    sns.barplot(data=dffin2, x='customerNumber', y="to_be_paid", color='b')
+    ax.set_ylabel('Amount to be paid')
+    ax.set_xlabel('Customer Number')
+    ax.set_title('Which clients do we have to chase?')
+    plt.legend(loc='upper left')
+    st.pyplot(fig2)
     
-    st.subheader('*Which clients do we have to chase?*')
-    hide_table_row_index = """
-            <style>
-            thead tr th:first-child {display:none}
-            tbody th {display:none}
-            </style>
-            """
-    st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dffin3) 
-    
-    #sns.boxplot(x=dffin3["age"])
 
 elif add_selectbox == 'Sales':
-    st.title('Sales 📦')
-    st.subheader('*Which is our most important category?*')
+    st.markdown('''Welcome to *Sales*''')
     
-    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
-    dataAll = dfSales.groupby('productline').total_orders.sum()
-    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
-        'Trucks and Buses', 'Vintage Cars']
+    #connection = 'mysql://toyscie:WILD4Rdata!@51.68.18.102:23456/toys_and_models'
+    #sql_engine = sql.create_engine(connection)
+   
 
-    #define Seaborn color palette
-    colors = sns.color_palette('Greens')[0:5]
-    colors1 = sns.color_palette('Paired')[0:7]
-
-    #Create pie chart for each year
-    #All years
-    fig05, ax = plt.subplots(figsize = (10,2))
-    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%', textprops={'fontsize': 4})
-    #plt.yticks(fontsize=10)
-    st.pyplot(fig05)
-    st.subheader('')
-
-    st.subheader('*Which category is experiencing the highest growth?*')
-
-    fig01, ax = plt.subplots(figsize = (10, 5))
+    fig01, ax = plt.subplots(figsize = (15, 5))
     dfS = dfSales.groupby('productline').mean()
-    ax.bar(dfS.index, dfS['growth'], color = 'mediumseagreen')
+    ax.bar(dfS.index, dfS['growth'])
     ax.set_ylabel('Overall Growth in Orders')
     ax.set_xlabel('Product Lines')
     ax.set_title('Growth by category (all_dates)')
@@ -241,44 +190,117 @@ elif add_selectbox == 'Sales':
     xticks = mtick.FormatStrFormatter(fmt)
     ax.yaxis.set_major_formatter(xticks)
     st.pyplot(fig01)
-    st.subheader('')
 
+    print('Total orders in 2020')
+    print(dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum())
+    print('')
+    #st.text('Total orders in 2020')
+    #st.table(dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum())
+    
+    print('Total orders in 2021')
+    print(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
+    print('')
+    #st.text(" ")
+    #st.text("Total orders 2021")
+    #st.table(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
+
+    print('Total orders all years')
+    print(dfSales.groupby('productline').total_orders.sum())
+    #st.text(" ")
+    #st.text("Total orders all years")
+    #st.table(dfSales.groupby('productline').total_orders.sum())
+
+    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
+    data2021 = dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum()
+    data2022 = dfSales[dfSales['order_year']==2022].groupby('productline').total_orders.sum()
+    dataAll = dfSales.groupby('productline').total_orders.sum()
+    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
+        'Trucks and Buses', 'Vintage Cars']
+
+    #define Seaborn color palette
+    colors = sns.color_palette('tab10')[0:7]
+    colors1 = sns.color_palette('Paired')[0:7]
+
+    #Create pie chart for each year
+    #Year 2020
+    print('Plot 2020')
+    fig02,  ax = plt.subplots(figsize =(10, 5))
+    plt.pie(data2020, labels = labels, colors = colors1, autopct='%.0f%%')
+    #plt.show()
+    #st.text(" ")
+    #st.text("Plot 2020")
+    #st.pyplot(fig02)
+    
+    #Year 2021
+    print('Plot 2021')
+    fig03, ax = plt.subplots(figsize = (10,5))
+    plt.pie(data2021, labels = labels, colors = colors1, autopct='%.0f%%')
+    #plt.show()
+    #st.text(" ")
+    #st.text("Plot 2021")
+    #st.pyplot(fig03)
+
+    #Year 2022
+    fig04, ax = plt.subplots(figsize =(5,5))
+    plt.pie(data2022, labels= labels, colors= colors1, autopct='%.0f%%' )
+    #st.text(" ")
+    #st.text("Plot 2022")
+    #st.pyplot(fig04)
+
+    #All years
+    fig05, ax = plt.subplots(figsize = (5,5))
+    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%')
+    st.text(" ")
+    st.text("Plot All")
+    st.pyplot(fig05)
     
     #dfSales[dfSales['productline']=='Classic Cars']
-    st.subheader('*Which categories are growing on a YoY basis?*')
-    options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
     
+    options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
     #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
+    
     
     #dfCC = dfSales[dfSales['productline']==options]
 
-    fig07, ax = plt.subplots(figsize = (10, 5))
-    colors = sns.color_palette('Greens')[5]
-    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", color = 'mediumseagreen', ci=None)
+    fig07, ax = plt.subplots(figsize = (15, 5))
+    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", ci=None)
     ax.set_ylabel('Orders')
     ax.set_xlabel('Month')
-    ax.set_title('Monthly order growth by category')
-    ax.get_yaxis().set_major_formatter(mtick.FuncFormatter(lambda x, p: format(int(x), ',')))
+    ax.set_title('Monthly order growth for Classic Cars')
     plt.legend(loc='upper right', title='Year')
     st.pyplot(fig07)
 
+  
+    
+    #fig08, ax = plt.subplots(figsize =(15,5))
+    #sns.set(rc={'figure.figsize':(12,5)})
+    #sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
+    #plt.legend(loc='upper right', title='Year')
+    #st.pyplot(fig08)
 
 elif add_selectbox == 'Logistics':
-    st.title('Logistics 🏭')
-    st.subheader('*Which is the stock level of the 5 most ordered products??*')
+    st.markdown('''Hi, _this_ is **Logistics**''')
+    
+    
+    print(dfLog)
+
+
+    st.title('Logistics')
+    st.table(dfLog)
 
     fig08, ax = plt.subplots()
-    ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = 'mediumseagreen')
+    ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = "green")
     ax.invert_yaxis()
     ax.set_xlabel('Available Stock')
     ax.set_title('Stock of the 5 most ordered products')
-    ax.get_xaxis().set_major_formatter(mtick.FuncFormatter(lambda x, p: format(int(x), ',')))
     #plt.yticks(fontsize=7)
     st.pyplot(fig08)
     
 else:
-    st.title('Human Resources 👩‍💻')
-    st.subheader('*Who have been the top sellers?*')    
+    st.markdown('''Hi, _this_ is **HR**''')
+    
+    
+# Query 1 plot
     
     options = st.selectbox('Choose the month:', dffin_1['date_true'].unique())
     #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])

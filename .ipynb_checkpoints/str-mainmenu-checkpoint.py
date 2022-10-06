@@ -155,7 +155,7 @@ dffin_2 = pd.read_sql_query(query2_hr, con=connection2)
 
 primaryColor = '#77FFE3'
      
-
+#color1 = sns.color_palette("light:#5A9", as_cmap=True)
 #colors1 = sns.color_palette('Paired')[0:7]
 
 # Using object notation
@@ -176,7 +176,7 @@ if add_selectbox == 'Intro':
     
 elif add_selectbox == 'Finance':
     
-    #color1 = sns.color_palette("light:#5A9", as_cmap=True)
+    
     st.title('Finance 💰')
     st.subheader('*Where are our models going to?*')
     fig1, ax = plt.subplots(figsize = (10, 5))
@@ -210,11 +210,30 @@ elif add_selectbox == 'Finance':
 
 elif add_selectbox == 'Sales':
     st.title('Sales 📦')
-    st.subheader('*...SALES...?*') 
+    st.subheader('*Which is our most important category?*')
+    
+    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
+    dataAll = dfSales.groupby('productline').total_orders.sum()
+    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
+        'Trucks and Buses', 'Vintage Cars']
 
-    fig01, ax = plt.subplots(figsize = (15, 5))
+    #define Seaborn color palette
+    colors = sns.color_palette('Greens')[0:5]
+    colors1 = sns.color_palette('Paired')[0:7]
+
+    #Create pie chart for each year
+    #All years
+    fig05, ax = plt.subplots(figsize = (10,2))
+    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%', textprops={'fontsize': 4})
+    #plt.yticks(fontsize=10)
+    st.pyplot(fig05)
+    st.subheader('')
+
+    st.subheader('*Which category is experiencing the highest growth?*')
+
+    fig01, ax = plt.subplots(figsize = (10, 5))
     dfS = dfSales.groupby('productline').mean()
-    ax.bar(dfS.index, dfS['growth'])
+    ax.bar(dfS.index, dfS['growth'], color = 'mediumseagreen')
     ax.set_ylabel('Overall Growth in Orders')
     ax.set_xlabel('Product Lines')
     ax.set_title('Growth by category (all_dates)')
@@ -222,97 +241,31 @@ elif add_selectbox == 'Sales':
     xticks = mtick.FormatStrFormatter(fmt)
     ax.yaxis.set_major_formatter(xticks)
     st.pyplot(fig01)
+    st.subheader('')
 
-    print('Total orders in 2020')
-    print(dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum())
-    print('')
-    #st.text('Total orders in 2020')
-    #st.table(dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum())
-    
-    print('Total orders in 2021')
-    print(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
-    print('')
-    #st.text(" ")
-    #st.text("Total orders 2021")
-    #st.table(dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum())
-
-    print('Total orders all years')
-    print(dfSales.groupby('productline').total_orders.sum())
-    #st.text(" ")
-    #st.text("Total orders all years")
-    #st.table(dfSales.groupby('productline').total_orders.sum())
-
-    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
-    data2021 = dfSales[dfSales['order_year']==2021].groupby('productline').total_orders.sum()
-    data2022 = dfSales[dfSales['order_year']==2022].groupby('productline').total_orders.sum()
-    dataAll = dfSales.groupby('productline').total_orders.sum()
-    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
-        'Trucks and Buses', 'Vintage Cars']
-
-    #define Seaborn color palette
-    colors = sns.color_palette('tab10')[0:7]
-    colors1 = sns.color_palette('Paired')[0:7]
-
-    #Create pie chart for each year
-    #Year 2020
-    print('Plot 2020')
-    fig02,  ax = plt.subplots(figsize =(10, 5))
-    plt.pie(data2020, labels = labels, colors = colors1, autopct='%.0f%%')
-    #plt.show()
-    #st.text(" ")
-    #st.text("Plot 2020")
-    #st.pyplot(fig02)
-    
-    #Year 2021
-    print('Plot 2021')
-    fig03, ax = plt.subplots(figsize = (10,5))
-    plt.pie(data2021, labels = labels, colors = colors1, autopct='%.0f%%')
-    #plt.show()
-    #st.text(" ")
-    #st.text("Plot 2021")
-    #st.pyplot(fig03)
-
-    #Year 2022
-    fig04, ax = plt.subplots(figsize =(5,5))
-    plt.pie(data2022, labels= labels, colors= colors1, autopct='%.0f%%' )
-    #st.text(" ")
-    #st.text("Plot 2022")
-    #st.pyplot(fig04)
-
-    #All years
-    fig05, ax = plt.subplots(figsize = (5,5))
-    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%')
-    st.text(" ")
-    st.text("Plot All")
-    st.pyplot(fig05)
     
     #dfSales[dfSales['productline']=='Classic Cars']
-    
+    st.subheader('*Which categories are growing on a YoY basis?*')
     options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
-    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
     
+    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
     
     #dfCC = dfSales[dfSales['productline']==options]
 
-    fig07, ax = plt.subplots(figsize = (15, 5))
-    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", ci=None)
+    fig07, ax = plt.subplots(figsize = (10, 5))
+    colors = sns.color_palette('Greens')[5]
+    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", color = 'mediumseagreen', ci=None)
     ax.set_ylabel('Orders')
     ax.set_xlabel('Month')
-    ax.set_title('Monthly order growth for Classic Cars')
+    ax.set_title('Monthly order growth by category')
+    ax.get_yaxis().set_major_formatter(mtick.FuncFormatter(lambda x, p: format(int(x), ',')))
     plt.legend(loc='upper right', title='Year')
     st.pyplot(fig07)
 
-  
-    
-    #fig08, ax = plt.subplots(figsize =(15,5))
-    #sns.set(rc={'figure.figsize':(12,5)})
-    #sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
-    #plt.legend(loc='upper right', title='Year')
-    #st.pyplot(fig08)
 
 elif add_selectbox == 'Logistics':
     st.title('Logistics 🏭')
-    st.subheader('*What is the stock of the most ordered products?*')
+    st.subheader('*Which is the stock level of the 5 most ordered products??*')
 
     fig08, ax = plt.subplots()
     ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = 'mediumseagreen')
