@@ -173,7 +173,8 @@ elif add_selectbox == 'Finance':
     st.title('Finance 💰')
     st.subheader('*Where are our models going to?*')
     fig1, ax = plt.subplots(figsize = (10, 5))
-    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", ci=None)
+    colors = sns.color_palette('BuGn')[4]
+    sns.barplot(data=dffin, x='country', y="Turnover", hue="Month", color = colors, ci=None)
     ax.set_ylabel('Turnover')
     ax.set_xlabel('Country')
     ax.set_title('Turnover per country over the past 2 months')
@@ -201,7 +202,27 @@ elif add_selectbox == 'Finance':
     #sns.boxplot(x=dffin3["age"])
 
 elif add_selectbox == 'Sales':
-    st.markdown('''Welcome to *Sales*''')
+    st.title('Sales 💰')
+    st.subheader('*Which is our most important category?*')
+    
+    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
+    dataAll = dfSales.groupby('productline').total_orders.sum()
+    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
+        'Trucks and Buses', 'Vintage Cars']
+
+    #define Seaborn color palette
+    colors = sns.color_palette('Greens')[0:5]
+    colors1 = sns.color_palette('Paired')[0:7]
+
+    #Create pie chart for each year
+    #All years
+    fig05, ax = plt.subplots(figsize = (10,2))
+    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%', textprops={'fontsize': 4})
+    #plt.yticks(fontsize=10)
+    st.pyplot(fig05)
+    st.subheader('')
+
+    st.subheader('*Which category is experiencing the highest growth?*')
 
     fig01, ax = plt.subplots(figsize = (10, 5))
     dfS = dfSales.groupby('productline').mean()
@@ -213,56 +234,32 @@ elif add_selectbox == 'Sales':
     xticks = mtick.FormatStrFormatter(fmt)
     ax.yaxis.set_major_formatter(xticks)
     st.pyplot(fig01)
+    st.subheader('')
 
-   
-
-    data2020 = dfSales[dfSales['order_year']==2020].groupby('productline').total_orders.sum()
-    dataAll = dfSales.groupby('productline').total_orders.sum()
-    labels = ['Classic Cars', 'Motorcycles', 'Planes', 'Ships', 'Trains',
-        'Trucks and Buses', 'Vintage Cars']
-
-    #define Seaborn color palette
-    colors = sns.color_palette('tab10')[0:7]
-    colors1 = sns.color_palette('Paired')[0:7]
-
-    #Create pie chart for each year
-    #All years
-    fig05, ax = plt.subplots(figsize = (10,2))
-    plt.pie(dataAll, labels = labels, colors = colors, autopct='%.0f%%', textprops={'fontsize': 4})
-    #plt.yticks(fontsize=10)
-    st.text(" ")
-    st.text("Plot All")
-    st.pyplot(fig05)
     
     #dfSales[dfSales['productline']=='Classic Cars']
-    
+    st.subheader('*Which categories are gorwing on a YoY basis?*')
     options = st.selectbox('Choose the type of product:', dfSales['productline'].unique())
-    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
     
+    #['Classic Cars', 'Vintage Cars', 'Planes', 'Motorcycles','Ships','Trains','Trucks and Buses'])
     
     #dfCC = dfSales[dfSales['productline']==options]
 
     fig07, ax = plt.subplots(figsize = (10, 5))
-    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", ci=None)
+    colors = sns.color_palette('Greens')[5]
+    sns.barplot(data=dfSales[dfSales['productline']==options], x='order_month', y="total_orders", hue="order_year", color = colors, ci=None)
     ax.set_ylabel('Orders')
     ax.set_xlabel('Month')
     ax.set_title('Monthly order growth for Classic Cars')
     plt.legend(loc='upper right', title='Year')
     st.pyplot(fig07)
 
-  
-    
-    #fig08, ax = plt.subplots(figsize =(15,5))
-    #sns.set(rc={'figure.figsize':(12,5)})
-    #sns.barplot(data=dfCC, x='order_month', y="total_orders", hue="order_year", ci=None)
-    #plt.legend(loc='upper right', title='Year')
-    #st.pyplot(fig08)
-
 elif add_selectbox == 'Logistics':
-    st.markdown('''Hi, _this_ is **Logistics**''')
     
-    
-    print(dfLog)
+    st.title('Logistics 💰')
+    st.subheader('*Which is the stock level of the 5 most ordered products?*')
+
+    #print(dfLog)
 
     fig08, ax = plt.subplots(figsize =(10,5))
     ax.barh(dfLog["productName"], dfLog["sum(products.quantityInStock)"], align='center', color = "green")
@@ -273,7 +270,8 @@ elif add_selectbox == 'Logistics':
     st.pyplot(fig08)
     
 else:
-    st.markdown('''Hi, _this_ is **HR**''')
+    st.title('Human Resources 💰')
+    st.subheader('*Who are the best sellers for the past two months?*')
     
     
 # Query 1 plot
@@ -301,6 +299,8 @@ else:
     #st.pyplot(fig_1)
     
 # Query 2 plot
+    st.subheader('')
+    st.subheader('*How many times has each seller been TOP 1 in the ranking?*')
     hide_table_row_index = """
             <style>
             thead tr th:first-child {display:none}
