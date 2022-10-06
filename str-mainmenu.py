@@ -198,6 +198,7 @@ elif add_selectbox == 'Finance':
     #st.pyplot(fig2)
     
     st.subheader('*Which clients do you have to chase?*')
+    st.text('List of clients with outstanding payments')  
     hide_table_row_index = """
             <style>
             thead tr th:first-child {display:none}
@@ -305,4 +306,6 @@ else:
     st.markdown(hide_table_row_index, unsafe_allow_html=True)
     st.table(dffin_2)
     
+    image1 = Image.open('../Toys_models-Project-2/bonheur-au-travail.jpg')
+    st.image(image1)
     
